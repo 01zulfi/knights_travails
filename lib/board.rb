@@ -6,23 +6,15 @@ class Board
 
   def initialize
     @board = Array.new(8) { Array.new(8) }
-    @knight_position = [nil, nil]
+    @root = nil
+    @knight_position = nil
   end
 
   def place(coordinate, piece)
     x, y = transform_coordinates(coordinate)
     board[x][y] = piece
+    @root = build_next_branches([x, y])
     @knight_position = [x, y]
-  end
-
-  def mark_next_moves(coordinate)
-    x, y = transform_coordinates(coordinate)
-    knight = board[x][y]
-    legal_moves = within_board(knight.next_possible_moves(@knight_position))
-    p legal_moves
-    legal_moves.each do |legal_move|
-      board[legal_move.first][legal_move.last] = 'here'
-    end
   end
 
   def print_board
@@ -33,6 +25,12 @@ class Board
   end
 
   private
+
+  def build_next_branches(root) 
+    x, y = transform_coordinates(@knight_position) 
+    knight = board[x][y]
+    legal_moves = within_board(knight.next_possible_moves(x, y))
+  end
 
   def within_board(moves)
     moves.select { |move| move.first.between?(1, 8) && move.last.between?(1, 8) }
